@@ -49,7 +49,7 @@ def process_single_row(row, row_index, args):
     """Process a single video row to extract frames"""
     video_path = row["infer_video_path"]
     frame_start = 0
-    num_frames = 81
+    num_frames = args.num_frames
     output_dir = os.path.join(args.output_dir, f"{row_index}")
 
     if not os.path.exists(output_dir):
@@ -58,7 +58,7 @@ def process_single_row(row, row_index, args):
     output_dir = os.path.join(output_dir, "img")
 
     # Calculate frame extraction interval
-    interval = 5
+    interval = args.interval
 
     extract_frames(
         video_path, output_dir, interval, frame_start, num_frames, args.target_size
@@ -89,9 +89,15 @@ def parse_args():
         help="Output directory for extracted frames",
     )
     parser.add_argument(
+        "--num_frames",
+        type=int,
+        default=81,
+        help="Number of frames to extract (set to 0 to extract all frames)",
+    )
+    parser.add_argument(
         "--interval",
-        type=float,
-        default=0.2,
+        type=int,
+        default=5,
         help="Frame extraction interval in seconds (set to 0 to extract every frame)",
     )
     parser.add_argument(

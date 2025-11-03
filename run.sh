@@ -31,7 +31,8 @@ measure_time 1 python extract_frames.py \
   --OUTPUT_DIR ${OUTPUT_DIR} \
   --num_workers $((GPU_NUM * 2)) \
   --target_size "1280*720" \
-  --interval 0.2
+  --num_frames 81 \
+  --interval 5
 
 # 2.1 Depth Estimation with Depth-Anything
 CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} measure_time 2.1 torchrun --standalone --nproc_per_node ${GPU_NUM} depth_estimation/Depth-Anything/inference_batch.py \
