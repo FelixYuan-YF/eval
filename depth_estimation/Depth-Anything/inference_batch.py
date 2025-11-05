@@ -146,7 +146,7 @@ def main():
     for index, row in tqdm(
         df.iterrows(), total=len(df), desc="Loading images", disable=(local_rank != 0)
     ):
-        img_dir = os.path.join(args.output_dir, f"{index}", "img")
+        img_dir = os.path.join(args.output_dir, row['id'], "img")
         if not os.path.exists(img_dir):
             print(f"Image directory not found: {img_dir}")
             continue

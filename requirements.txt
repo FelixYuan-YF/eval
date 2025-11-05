@@ -18,3 +18,4 @@ xformers==0.0.30
 gradio_imageslider==0.0.20
 gradio==4.29.0
 OpenEXR
+openai-clip

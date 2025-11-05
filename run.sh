@@ -59,8 +59,14 @@ CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} measure_time 3 python camera_tracki
   --gpu_id ${CUDA_VISIBLE_DEVICES} \
   --num_workers $((GPU_NUM * 2))
 
-# 4. eval
+# 4. eval pose
 python eval.py \
   --csv_path ${CSV} \
   --dir_path ${OUTPUT_DIR} \
   --output_csv ${OUTPUT_DIR}/eval_results.csv
+
+# 5. eval CLIP-T and CLIP-F
+CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} measure_time 5 python eval2.py \
+  --csv_path ${OUTPUT_DIR}/eval_results.csv \
+  --gpu_num ${GPU_NUM} \
+  --num_workers $((GPU_NUM * 2))

@@ -22,7 +22,7 @@ def process_single_row(row, index, args, worker_id=0):
     """
     Process a single video for camera tracking.
     """
-    dir_path = os.path.join(args.dir_path, f"{index}")
+    dir_path = os.path.join(args.dir_path, row['id'])
     device_id = worker_id % args.gpu_num
 
     cmd = (
@@ -36,7 +36,7 @@ def process_single_row(row, index, args, worker_id=0):
     )
     stdout, stderr = process.communicate()
     if process.returncode != 0:
-        print(f"Error tracking camera for {index}: {stderr.decode()}")
+        print(f"Error tracking camera for {row['id']}: {stderr.decode()}")
 
 
 def worker(task_queue, args, worker_id, pbar):
