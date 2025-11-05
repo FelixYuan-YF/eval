@@ -22,7 +22,7 @@ def process_single_row(row, index, args, worker_id=0):
     """
     Process a single video for camera tracking.
     """
-    dir_path = os.path.join(args.dir_path, row['id'])
+    dir_path = os.path.join(args.dir_path, f"{row['id']}")
     device_id = worker_id % args.gpu_num
 
     cmd = (

@@ -6,53 +6,33 @@ mkdir -p ${OUTPUT_DIR}
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 GPU_NUM=8
 
-measure_time() {
-    local step_number=$1
-    shift
-    local green="\e[32m"
-    local red="\e[31m"
-    local no_color="\e[0m"
-    local yellow="\e[33m"
-    
-    start_time=$(date +%s)
-    echo -e "${green}Step ${step_number} started at: $(date)${no_color}"
-
-    "$@"
-
-    end_time=$(date +%s)
-    echo -e "${red}Step ${step_number} finished at: $(date)${no_color}"
-    echo -e "${yellow}Duration: $((end_time - start_time)) seconds${no_color}"
-    echo "---------------------------------------"
-}
-
 # 1. Extract frames
-measure_time 1 python extract_frames.py \
+python extract_frames.py \
   --csv_path ${CSV} \
-  --OUTPUT_DIR ${OUTPUT_DIR} \
+  --output_dir ${OUTPUT_DIR} \
   --num_workers $((GPU_NUM * 2)) \
-  --target_size "1280*720" \
   --num_frames 81 \
   --interval 5
 
 # 2.1 Depth Estimation with Depth-Anything
-CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} measure_time 2.1 torchrun --standalone --nproc_per_node ${GPU_NUM} depth_estimation/Depth-Anything/inference_batch.py \
+CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} torchrun --standalone --nproc_per_node ${GPU_NUM} depth_estimation/Depth-Anything/inference_batch.py \
   --csv_path ${CSV} \
   --encoder vitl \
   --checkpoints_path checkpoints \
-  --OUTPUT_DIR ${OUTPUT_DIR} \
+  --output_dir ${OUTPUT_DIR} \
   --bs 16 \
   --num_workers ${GPU_NUM}
 
 # 2.2 Depth Estimation with UniDepth
-CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} measure_time 2.2 torchrun --standalone --nproc_per_node ${GPU_NUM} depth_estimation/UniDepth/inference_batch.py \
+CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} torchrun --standalone --nproc_per_node ${GPU_NUM} depth_estimation/UniDepth/inference_batch.py \
   --csv_path ${CSV} \
-  --OUTPUT_DIR ${OUTPUT_DIR} \
+  --output_dir ${OUTPUT_DIR} \
   --checkpoints_path checkpoints \
   --bs 32 \
   --num_workers ${GPU_NUM}
 
 # 3. Camera Tracking
-CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} measure_time 3 python camera_tracking/inference_batch.py \
+CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} python camera_tracking/inference_batch.py \
   --csv_path ${CSV} \
   --dir_path ${OUTPUT_DIR} \
   --checkpoints_path checkpoints \
@@ -66,7 +46,7 @@ python eval.py \
   --output_csv ${OUTPUT_DIR}/eval_results.csv
 
 # 5. eval CLIP-T and CLIP-F
-CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} measure_time 5 python eval2.py \
+CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} python eval2.py \
   --csv_path ${OUTPUT_DIR}/eval_results.csv \
   --gpu_num ${GPU_NUM} \
   --num_workers $((GPU_NUM * 2))

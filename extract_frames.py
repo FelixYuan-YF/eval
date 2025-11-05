@@ -50,7 +50,7 @@ def process_single_row(row, row_index, args):
     video_path = row["infer_video_path"]
     frame_start = 0
     num_frames = args.num_frames
-    output_dir = os.path.join(args.output_dir, row['id'])
+    output_dir = os.path.join(args.output_dir, f"{row['id']}")
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
