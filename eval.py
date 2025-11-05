@@ -150,16 +150,15 @@ def main():
     df = pd.read_csv(args.csv_path)
 
     metric_names = ["RotErr", "TransErr_rel", "CamMC_rel", "TransErr_abs", "CamMC_abs"]
-    results = pd.DataFrame(columns=metric_names)
     
     for idx, row in df.iterrows():
         gt_path = row['pose_path']
-        est_path = f"{args.dir_path}/{idx}/reconstructions/poses.npy"
+        est_path = f"{args.dir_path}/{row['id']}/reconstructions/poses.npy"
 
         # 1. 读取并转换GT和估计的姿态（完全用你的转换逻辑）
         gt_rel_c2w = load_npy_and_convert_pose(
             poses_npy_path=gt_path
-        )
+        )[:17]
         est_rel_c2w = load_npy_and_convert_pose(
             poses_npy_path=est_path
         )
@@ -173,10 +172,11 @@ def main():
         metrics = metric(gt_rel_c2w, est_rel_c2w)
 
         # 保存到CSV
-        result_row = {name: value for name, value in zip(metric_names, metrics)}
-        results = results.append(result_row, ignore_index=True)
-    
-    results.to_csv(args.output_csv, index=False)
+        results = {name: value for name, value in zip(metric_names, metrics)}
+        for name, value in results.items():
+            df.at[idx, name] = value
+
+    df.to_csv(args.output_csv, index=False)
     print(f"评估结果已保存到 {args.output_csv}")
 
 

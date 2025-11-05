@@ -20,6 +20,7 @@ import clip
 import torch
 import cv2
 from PIL import Image
+import torch.multiprocessing as mp
 
 
 def process_single_row(row, index, args, model=None, preprocess=None, device=None):
@@ -60,7 +61,7 @@ def process_single_row(row, index, args, model=None, preprocess=None, device=Non
 
 def worker(task_queue, result_queue,args, worker_id):
     device_id = worker_id % args.gpu_num
-    device = f"cuda:{args.gpu_id[device_id]}"
+    device = f"cuda:{device_id}"
     model, preprocess = clip.load("ViT-B/32", device=device)
     while True:
         try:
@@ -88,6 +89,7 @@ def parse_args():
 
 
 def main():
+    mp.set_start_method("spawn", force=True)
     args = parse_args()
 
     df = pd.read_csv(args.csv_path)

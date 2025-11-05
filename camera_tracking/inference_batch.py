@@ -26,7 +26,7 @@ def process_single_row(row, index, args, worker_id=0):
     device_id = worker_id % args.gpu_num
 
     cmd = (
-        f"CUDA_VISIBLE_DEVICES={args.gpu_id[device_id]} python camera_pose_annotation/camera_tracking/camera_tracking.py "
+        f"CUDA_VISIBLE_DEVICES={args.gpu_id[device_id]} python camera_tracking/camera_tracking.py "
         f"--dir_path {dir_path} "
         f"--weights {args.checkpoints_path}/megasam_final.pth "
         f"--disable_vis"
