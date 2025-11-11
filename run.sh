@@ -50,3 +50,12 @@ CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} python eval2.py \
   --csv_path ${OUTPUT_DIR}/eval_results.csv \
   --gpu_num ${GPU_NUM} \
   --num_workers $((GPU_NUM * 2))
+
+# 6. eval FVD
+
+# 需要添加对于GT视频的抽帧，保存结构${OUTPUT_DIR_GT}/{id}/img/*.png
+
+CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES} python eval3.py \
+  --csv_path ${OUTPUT_DIR}/eval_results.csv \
+  --gt_folder ${OUTPUT_DIR_GT} \
+  --sample_folder ${OUTPUT_DIR}
